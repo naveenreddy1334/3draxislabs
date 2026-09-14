@@ -63,7 +63,17 @@ const FILTERS = [
 
 export default function Gallery() {
   const [active, setActive] = useState("all");
+  const [flipped, setFlipped] = useState(() => new Set());
   const items = active === "all" ? ITEMS : ITEMS.filter((i) => i.cat === active);
+
+  function toggleFlip(title) {
+    setFlipped((prev) => {
+      const next = new Set(prev);
+      if (next.has(title)) next.delete(title);
+      else next.add(title);
+      return next;
+    });
+  }
 
   return (
     <section className="gallery" id="gallery">
@@ -89,7 +99,13 @@ export default function Gallery() {
 
         <div className="gallery-grid">
           {items.map((item) => (
-            <div className="flip-outer" key={item.title}>
+            <button
+              type="button"
+              className={`flip-outer${flipped.has(item.title) ? " flipped" : ""}`}
+              key={item.title}
+              onClick={() => toggleFlip(item.title)}
+              aria-label={`${item.title} — tap for details`}
+            >
               <div className="flip-inner">
                 <div className="flip-face flip-front">
                   <span className="cat-tag">{item.label}</span>
@@ -99,7 +115,7 @@ export default function Gallery() {
                   <p>{item.desc}</p>
                 </div>
               </div>
-            </div>
+            </button>
           ))}
         </div>
       </div>
